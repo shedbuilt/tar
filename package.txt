@@ -1,5 +1,5 @@
 NAME=tar
 VERSION=1.30
-REVISION=2
+REVISION=3
 SRC=http://ftp.gnu.org/gnu/tar/tar-1.30.tar.xz
 SRCMD5=2d01c6cd1387be98f57a0ec4e6e35826
