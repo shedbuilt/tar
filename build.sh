@@ -1,18 +1,21 @@
 #!/bin/bash
-case "$SHED_BUILD_MODE" in
-    toolchain)
-        FORCE_UNSAFE_CONFIGURE=1 \
-        ./configure --prefix=/tools || return 1
-        ;;
-    *)
-        FORCE_UNSAFE_CONFIGURE=1  \
-        ./configure --prefix=/usr \
-                    --bindir=/bin || return 1
-        ;;
-esac
-make -j $SHED_NUM_JOBS || return 1
-make DESTDIR="$SHED_FAKE_ROOT" install || return 1
+declare -A SHED_PKG_LOCAL_OPTIONS=${SHED_PKG_OPTIONS_ASSOC}
+# Configure
+SHED_PKG_LOCAL_PREFIX='/usr'
+SHED_PKG_LOCAL_BINDIR='/bin'
+if [ -n "${SHED_PKG_LOCAL_OPTIONS[toolchain]}" ]; then
+    SHED_PKG_LOCAL_PREFIX='/tools'
+    SHED_PKG_LOCAL_BINDIR='/tools/bin'
+fi
+FORCE_UNSAFE_CONFIGURE=1  \
+./configure --prefix=${SHED_PKG_LOCAL_PREFIX} \
+            --bindir=${SHED_PKG_LOCAL_BINDIR} &&
 
-if [ "$SHED_BUILD_MODE" != 'toolchain' ]; then
-    make -C doc DESTDIR="$SHED_FAKE_ROOT" install-html docdir=/usr/share/doc/tar-1.30 || return 1
+# Build and Install
+make -j $SHED_NUM_JOBS &&
+make DESTDIR="$SHED_FAKE_ROOT" install || exit 1
+
+# Install Documentation
+if [ -n "${SHED_PKG_LOCAL_OPTIONS[docs]}" ]; then
+    make DESTDIR="$SHED_FAKE_ROOT" -C doc install-html docdir=${SHED_PKG_LOCAL_PREFIX}/share/doc/${SHED_PKG_NAME}-${SHED_PKG_VERSION}
 fi
