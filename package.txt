@@ -1,7 +1,7 @@
 NAME=tar
 VERSION=1.30
 REVISION=1
-SRC=http://ftp.gnu.org/gnu/tar/tar-1.30.tar.xz
+SRC=http://mirrors.kernel.org/gnu/tar/tar-1.30.tar.xz
 SRCMD5=2d01c6cd1387be98f57a0ec4e6e35826
 OPTIONS=toolchain|bootstrap|release (docs)
 DEFAULTS=release docs
